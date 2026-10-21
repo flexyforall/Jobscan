@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: center;
   gap: 60px;
-  width: var(--page-width);
+  width: 100%;
   padding: 100px var(--page-gutter);
   overflow: hidden;
 }
@@ -227,7 +227,8 @@
 .autopilot__preview-blur {
   left: -40px;
   top: 297px;
-  width: 1324px;
+  /* 1324px at 1440: past the card to the panel's edge. */
+  width: calc(100% + 716px);
   height: 365px;
 }
 
@@ -254,7 +255,7 @@
   position: absolute;
   left: 0;
   top: 296px;
-  width: 608px;
+  width: 100%;
   height: 368px;
   border-radius: 0 0 4px 4px;
   background: var(--gradient-highlight-fade);
@@ -265,7 +266,7 @@
   position: absolute;
   left: 0;
   top: 297px;
-  width: 608px;
+  width: 100%;
   height: 2px;
   background: var(--gradient-highlight-fade);
   -webkit-backdrop-filter: blur(5px);

@@ -1,11 +1,12 @@
 .home {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  width: var(--page-width);
-  margin: 0 auto;
+  align-items: stretch;
+  /* Full-width layout with 60px side gutters; designed at 1440px, the minimum width. */
+  width: 100%;
+  min-width: var(--page-width);
   background: var(--color-page);
-  /* The logo row is 1448px wide in Figma; clip the 8px overflow instead of scrolling. */
+  /* The scrolling logo row is wider than the page; clip it instead of scrolling. */
   overflow-x: clip;
 }
 

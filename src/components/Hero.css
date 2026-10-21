@@ -151,6 +151,14 @@
   background: rgba(0, 0, 0, 0.2);
 }
 
+.resume-panel__stage {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 309px);
+  width: 618px;
+}
+
 .resume-panel__document {
   position: absolute;
   left: calc(50% - 0.13px);

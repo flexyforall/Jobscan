@@ -86,10 +86,32 @@ function monotoneCubic(xs: number[], ys: number[]) {
   }
 }
 
-/** Page-coloured backdrop with a rounded-rectangle hole in the middle of the viewport. */
-function backdropClip(vw: number, vh: number, w: number, h: number, r: number) {
-  const x = (vw - w) / 2
-  const y = (vh - h) / 2
+/**
+ * The part of the page that is actually on screen. Usually the viewport, but when the page
+ * is embedded in an iframe sized to the whole document (as in some previewers), the
+ * viewport is the full page height and only part of it is visible; IntersectionObserver
+ * reports that visible part in the page's own coordinates.
+ */
+type Stage = { top: number; height: number; width: number }
+
+const viewportStage = (): Stage => ({ top: 0, height: window.innerHeight, width: window.innerWidth })
+
+function measureStage(): Promise<Stage> {
+  return new Promise((resolve) => {
+    const target = document.querySelector('.home') ?? document.body
+    const observer = new IntersectionObserver(([entry]) => {
+      observer.disconnect()
+      const rect = entry?.intersectionRect
+      resolve(rect && rect.height > 40 ? { top: rect.top, height: rect.height, width: window.innerWidth } : viewportStage())
+    })
+    observer.observe(target)
+  })
+}
+
+/** Page-coloured backdrop with a rounded-rectangle hole centred on the visible stage. */
+function backdropClip(vw: number, vh: number, stage: Stage, w: number, h: number, r: number) {
+  const x = (stage.width - w) / 2
+  const y = stage.top + (stage.height - h) / 2
   const hole =
     r > 0
       ? `M${x + r} ${y}H${x + w - r}A${r} ${r} 0 0 1 ${x + w} ${y + r}V${y + h - r}A${r} ${r} 0 0 1 ${x + w - r} ${y + h}` +
@@ -156,8 +178,13 @@ function useRingTicks() {
 export function Loader({ onReveal, onDone }: LoaderProps) {
   const [phase, setPhase] = useState<Phase>('loading')
   const [percent, setPercent] = useState(0)
+  const [stage, setStage] = useState<Stage>(viewportStage)
   const backdropRef = useRef<HTMLDivElement>(null)
   const ticks = useRingTicks()
+
+  useEffect(() => {
+    void measureStage().then(setStage)
+  }, [])
 
   // Loading: follow the real asset progress, never faster than an eased minimum curve.
   useEffect(() => {
@@ -205,8 +232,8 @@ export function Loader({ onReveal, onDone }: LoaderProps) {
     const vw = window.innerWidth
     const vh = window.innerHeight
     const stops = [0, 0.2, 0.5, 1]
-    const width = monotoneCubic(stops, [56, 160, 622, vw].map(Math.log))
-    const height = monotoneCubic(stops, [56, 56, 218, vh].map(Math.log))
+    const width = monotoneCubic(stops, [56, 160, 622, stage.width].map(Math.log))
+    const height = monotoneCubic(stops, [56, 56, 218, stage.height].map(Math.log))
 
     let frame = 0
     let startedAt: number | null = null
@@ -214,17 +241,17 @@ export function Loader({ onReveal, onDone }: LoaderProps) {
       startedAt ??= now
       const t = Math.min(1, (now - startedAt) / EXPAND_MS)
       const p = easeExpand(t)
-      const w = Math.min(vw, Math.exp(width(p)))
-      const h = Math.min(vh, Math.exp(height(p)))
-      // Corners straighten out as the window meets the viewport edges.
-      const r = 8 * Math.min(1, (vw - w) / 60, (vh - h) / 60)
-      backdrop.style.clipPath = backdropClip(vw, vh, w, h, Math.max(0, r))
+      const w = Math.min(stage.width, Math.exp(width(p)))
+      const h = Math.min(stage.height, Math.exp(height(p)))
+      // Corners straighten out as the window meets the edges of the screen.
+      const r = 8 * Math.min(1, (stage.width - w) / 60, (stage.height - h) / 60)
+      backdrop.style.clipPath = backdropClip(vw, vh, stage, w, h, Math.max(0, r))
       if (t < 1) frame = requestAnimationFrame(tick)
       else onDone()
     }
     frame = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(frame)
-  }, [phase, onReveal, onDone])
+  }, [phase, stage, onReveal, onDone])
 
   // Keep the page still and at the top while the loader is up.
   useEffect(() => {
@@ -238,11 +265,19 @@ export function Loader({ onReveal, onDone }: LoaderProps) {
   }, [])
 
   return (
-    <div className={`loader loader--${phase}`} role="status" aria-live="polite" aria-label={`Loading ${percent}%`}>
+    <div
+      className={`loader loader--${phase}`}
+      role="status"
+      aria-live="polite"
+      aria-label={`Loading ${percent}%`}
+      style={{ '--stage-top': `${stage.top}px`, '--stage-height': `${stage.height}px` } as React.CSSProperties}
+    >
       <div
         ref={backdropRef}
         className="loader__backdrop"
-        style={{ clipPath: backdropClip(window.innerWidth, window.innerHeight, 56, 56, 8) }}
+        // Initial window; during the expansion the clip-path is driven frame by frame
+        // (React leaves it alone as long as this value does not change).
+        style={{ clipPath: backdropClip(window.innerWidth, window.innerHeight, stage, 56, 56, 8) }}
       />
 
       <div className="loader__scan" aria-hidden>

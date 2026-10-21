@@ -89,32 +89,35 @@ export function Hero() {
           <img src={images.resumePanelBg} alt="" />
         </div>
 
-        <ResumeDocument className="resume-panel__document" data-reveal style={revealDelay(T.panel - 600)} />
+        {/* Composition from Figma, kept centred when the panel is wider than 620px. */}
+        <div className="resume-panel__stage">
+          <ResumeDocument className="resume-panel__document" data-reveal style={revealDelay(T.panel - 600)} />
 
-        <div className="resume-panel__score" data-reveal="scale" style={revealDelay(T.panel + 400)}>
-          <div className="resume-panel__score-display">
-            <img className="resume-panel__score-track" src={icons.scoreRingTrack} alt="" />
-            <p className="resume-panel__score-value">
-              <CountUp value={88} suffix="%" start={started} delay={T.panel + 500} duration={2200} />
-            </p>
-            <p className="resume-panel__score-label">ATS Match</p>
-            <img className="resume-panel__score-ring" src={icons.scoreRing} alt="" />
+          <div className="resume-panel__score" data-reveal="scale" style={revealDelay(T.panel + 400)}>
+            <div className="resume-panel__score-display">
+              <img className="resume-panel__score-track" src={icons.scoreRingTrack} alt="" />
+              <p className="resume-panel__score-value">
+                <CountUp value={88} suffix="%" start={started} delay={T.panel + 500} duration={2200} />
+              </p>
+              <p className="resume-panel__score-label">ATS Match</p>
+              <img className="resume-panel__score-ring" src={icons.scoreRing} alt="" />
+            </div>
           </div>
+
+          <div className="resume-panel__highlight resume-panel__highlight--first" data-reveal="wipe" style={revealDelay(T.panel + 900)} />
+          <div className="resume-panel__highlight resume-panel__highlight--second" data-reveal="wipe" style={revealDelay(T.panel + 1300)} />
+
+          <div className="resume-panel__cursor" data-reveal style={revealDelay(T.panel + 700)}>
+            <span className="resume-panel__cursor-icon">
+              <img src={icons.add} alt="" />
+            </span>
+            <span className="resume-panel__cursor-line" />
+          </div>
+
+          <Badge tone="success" icon={icons.badgeImproving} className="resume-panel__status" data-reveal style={revealDelay(T.panel + 1800)}>
+            Improving your resume...
+          </Badge>
         </div>
-
-        <div className="resume-panel__highlight resume-panel__highlight--first" data-reveal="wipe" style={revealDelay(T.panel + 900)} />
-        <div className="resume-panel__highlight resume-panel__highlight--second" data-reveal="wipe" style={revealDelay(T.panel + 1300)} />
-
-        <div className="resume-panel__cursor" data-reveal style={revealDelay(T.panel + 700)}>
-          <span className="resume-panel__cursor-icon">
-            <img src={icons.add} alt="" />
-          </span>
-          <span className="resume-panel__cursor-line" />
-        </div>
-
-        <Badge tone="success" icon={icons.badgeImproving} className="resume-panel__status" data-reveal style={revealDelay(T.panel + 1800)}>
-          Improving your resume...
-        </Badge>
       </div>
     </section>
   )

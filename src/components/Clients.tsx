@@ -26,9 +26,9 @@ export function Clients() {
 
       <LinesText as="h2" id="clients-heading" className="clients__heading" text="Jobscan users have been hired by" delay={100} />
 
-      {/* The list is rendered twice and scrolled by one copy's width, so the loop is seamless. */}
+      {/* The list is repeated and scrolled by one copy's width, so the loop is seamless. */}
       <ul className="clients__logos">
-        {[...clientLogos, ...clientLogos].map(({ src, alt, left, top, width, height, clip }, index) => (
+        {[...clientLogos, ...clientLogos, ...clientLogos].map(({ src, alt, left, top, width, height, clip }, index) => (
           <li
             key={index}
             className="clients__logo"
