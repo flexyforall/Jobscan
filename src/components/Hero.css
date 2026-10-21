@@ -40,10 +40,6 @@
   color: var(--color-black);
 }
 
-.hero__heading-muted {
-  color: var(--color-text-muted);
-}
-
 .hero__lead {
   width: 100%;
   font-family: var(--font-sans);
@@ -51,13 +47,6 @@
   font-weight: 400;
   line-height: 28px;
   color: var(--color-text-secondary);
-}
-
-.hero__heading-blur {
-  left: 278px;
-  top: 127px;
-  width: 109px;
-  height: 80px;
 }
 
 .hero__metrics {

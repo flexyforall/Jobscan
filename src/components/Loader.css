@@ -1,0 +1,183 @@
+@property --ring-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 90deg;
+}
+
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.loader--loading,
+.loader--opening {
+  pointer-events: auto;
+}
+
+/*
+ * The window onto the page. Its huge spread shadow is the loader background, so
+ * growing the window reveals the page underneath. Black while loading.
+ */
+.loader__window {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  background: var(--color-black);
+  box-shadow: 0 0 0 150vmax var(--color-page);
+  transform: translate(-50%, -50%);
+  transition: background-color 0.35s ease;
+}
+
+.loader--opening .loader__window,
+.loader--expanding .loader__window {
+  background-color: transparent;
+}
+
+/* ---- Scan line (storyboard: Group 2 — glow, line, end markers) ---- */
+
+.loader__scan {
+  --gradient-highlight-fade: linear-gradient(
+    to bottom,
+    rgb(152 183 0 / 1) 0%,
+    rgb(178 201 64 / 0.75) 25%,
+    rgb(204 219 128 / 0.5) 50%,
+    rgb(229 237 191 / 0.25) 75%,
+    rgb(255 255 255 / 0) 100%
+  );
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 160px;
+  animation: loader-scan 2.4s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+  transition: opacity 0.35s ease;
+}
+
+.loader--opening .loader__scan,
+.loader--expanding .loader__scan {
+  opacity: 0;
+}
+
+@keyframes loader-scan {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 0 calc(100vh - 160px);
+  }
+}
+
+.loader__scan-glow {
+  position: absolute;
+  left: -0.65px;
+  right: -0.35px;
+  top: 5px;
+  height: 155px;
+  border-radius: 0 0 4px 4px;
+  background: var(--gradient-highlight-fade);
+  opacity: 0.3;
+}
+
+.loader__scan-line {
+  position: absolute;
+  left: -0.65px;
+  right: -0.35px;
+  top: 5px;
+  height: 2px;
+  background: var(--gradient-highlight-fade);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+
+.loader__scan-marker {
+  position: absolute;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 11.593px;
+  height: 11.593px;
+}
+
+.loader__scan-marker::before {
+  content: '';
+  flex: none;
+  width: 8.197px;
+  height: 8.197px;
+  background: var(--color-highlight-marker);
+  transform: rotate(45deg);
+}
+
+.loader__scan-marker--left {
+  left: -0.8px;
+}
+
+.loader__scan-marker--right {
+  right: 0.2px;
+}
+
+/* ---- Percentage badge ---- */
+
+.loader__badge {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  background: var(--color-black);
+  transform: translate(-50%, -50%);
+  transition:
+    opacity 0.35s ease,
+    scale 0.35s ease;
+}
+
+.loader--opening .loader__badge,
+.loader--expanding .loader__badge {
+  opacity: 0;
+  scale: 1.15;
+}
+
+.loader__percent {
+  position: relative;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--color-white);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Dashed 8px ring; the brightness gradient slowly rotates around it. */
+.loader__ring {
+  position: absolute;
+  left: calc(50% + 0.5px);
+  top: calc(50% + 0.5px);
+  transform: translate(-50%, -50%);
+  -webkit-mask-image: linear-gradient(var(--ring-angle), rgb(0 0 0 / 0.1) 15%, #000 80%);
+  mask-image: linear-gradient(var(--ring-angle), rgb(0 0 0 / 0.1) 15%, #000 80%);
+  animation: loader-ring 1.6s linear infinite;
+}
+
+@keyframes loader-ring {
+  to {
+    --ring-angle: 450deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader__scan,
+  .loader__ring {
+    animation: none;
+  }
+}

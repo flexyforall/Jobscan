@@ -1,0 +1,49 @@
+@property --front {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: -40px;
+}
+
+.reveal-text {
+  --front: -40px;
+  position: relative;
+  display: inline-block;
+  width: fit-content;
+  white-space: nowrap;
+}
+
+/* Not-yet-revealed text: the muted colour from the design. */
+.reveal-text__base {
+  color: var(--color-text-muted);
+}
+
+.reveal-text__ink {
+  position: absolute;
+  inset: 0;
+  color: var(--color-black);
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(var(--front) - 32px), transparent var(--front));
+  mask-image: linear-gradient(90deg, #000 calc(var(--front) - 32px), transparent var(--front));
+  pointer-events: none;
+}
+
+.reveal-text__blur {
+  left: var(--front);
+}
+
+.reveal-text__blur-tail {
+  position: absolute;
+  right: -24px;
+  background: var(--color-glass);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  pointer-events: none;
+}
+
+.reveal-text--done .reveal-text__base {
+  color: transparent;
+}
+
+.reveal-text--done .reveal-text__ink {
+  -webkit-mask-image: none;
+  mask-image: none;
+}

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { icons, images } from '../assets'
+import { revealDelay } from '../intro'
 import { ShaderFill } from '../lib/custom-effect-runtime/index'
 import {
   manifest as waterCausticManifest,
@@ -49,20 +50,20 @@ export function Autopilot() {
       </div>
 
       <div className="autopilot__title">
-        <Badge tone="glass" icon={icons.badgeAutopilot}>
+        <Badge tone="glass" icon={icons.badgeAutopilot} data-reveal>
           Autopilot — launching Jan 4, 2027
         </Badge>
-        <h2 id="autopilot-heading" className="autopilot__heading">
+        <h2 id="autopilot-heading" className="autopilot__heading" data-reveal style={revealDelay(100)}>
           <span>One agent.</span>
           <span>Your entire search.</span>
         </h2>
-        <p className="autopilot__lead">
+        <p className="autopilot__lead" data-reveal style={revealDelay(200)}>
           You approve every application before it goes out. Autopilot handles everything else.
         </p>
       </div>
 
       <div className="autopilot__tabs">
-        <div className="autopilot__tab-list" role="tablist" aria-label="Autopilot features">
+        <div className="autopilot__tab-list" role="tablist" aria-label="Autopilot features" data-reveal style={revealDelay(250)}>
           {tabs.map(({ id, label, icon }) => {
             const isActive = id === activeTab
             return (
@@ -94,10 +95,12 @@ export function Autopilot() {
           className="autopilot__panel"
           role="tabpanel"
           aria-labelledby={`autopilot-tab-${activeTab}`}
+          data-reveal
+          style={revealDelay(350)}
         >
           <div className="autopilot__feature">
             <div className="autopilot__preview" aria-hidden>
-              <ResumeDocument size="compact" className="autopilot__document" />
+              <ResumeDocument size="compact" className="autopilot__document" data-reveal style={revealDelay(500)} />
               <ProgressiveBlur className="autopilot__preview-blur" radius={32} direction="to bottom" steps={8} />
               <div className="autopilot__scanline">
                 <span className="autopilot__scan-glow" />

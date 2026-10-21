@@ -76,17 +76,6 @@
   text-align: center;
 }
 
-.scan-card__heading-muted {
-  color: var(--color-text-muted);
-}
-
-.scan-card__heading-blur {
-  left: 458px;
-  top: 145px;
-  width: 117px;
-  height: 52px;
-}
-
 /* ---- Analysis ---- */
 
 .scan-card__details {

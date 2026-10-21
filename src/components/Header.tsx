@@ -1,4 +1,5 @@
 import { icons } from '../assets'
+import { revealDelay } from '../intro'
 import './Header.css'
 
 // Label widths are the text box widths from Figma (whole pixels), so the
@@ -13,7 +14,7 @@ const navItems = [
 export function Header() {
   return (
     <header className="header">
-      <nav className="header__nav" aria-label="Main">
+      <nav className="header__nav" aria-label="Main" data-reveal="fade">
         <a className="header__logo" href="/" aria-label="Jobscan home">
           <span className="header__logo-mark">
             <img src={icons.logoMark} alt="" />
@@ -44,7 +45,7 @@ export function Header() {
         </ul>
       </nav>
 
-      <div className="header__actions">
+      <div className="header__actions" data-reveal="fade" style={revealDelay(100)}>
         <a className="header__sign-in header__label" href="#" style={{ width: 45 }}>
           Sign In
         </a>

@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import type { HTMLAttributes } from 'react'
 
 import { icons } from '../assets'
 import './ResumeDocument.css'
@@ -52,18 +52,16 @@ const lines: Line[] = [
   { kind: 'meta', text: '2007 - 2009, Bagnolet' },
 ]
 
-type ResumeDocumentProps = {
+type ResumeDocumentProps = HTMLAttributes<HTMLElement> & {
   /** `regular` = hero preview, `compact` = autopilot "Scan" preview (both sizes from Figma). */
   size?: 'regular' | 'compact'
-  className?: string
-  style?: CSSProperties
 }
 
-export function ResumeDocument({ size = 'regular', className, style }: ResumeDocumentProps) {
+export function ResumeDocument({ size = 'regular', className, ...rest }: ResumeDocumentProps) {
   return (
     <article
+      {...rest}
       className={['resume-document', `resume-document--${size}`, className].filter(Boolean).join(' ')}
-      style={style}
       aria-label="Resume preview"
     >
       <div className="resume-document__body">

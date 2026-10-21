@@ -1,4 +1,5 @@
 import { icons, logos } from '../assets'
+import { revealDelay } from '../intro'
 import { ProgressiveBlur } from './ProgressiveBlur'
 import './Clients.css'
 
@@ -16,19 +17,19 @@ const clientLogos = [
 export function Clients() {
   return (
     <section className="clients" aria-labelledby="clients-heading">
-      <div className="clients__divider" aria-hidden>
+      <div className="clients__divider" aria-hidden data-reveal="fade">
         <span className="clients__divider-line">
           <img src={icons.clientsDivider} alt="" />
         </span>
       </div>
 
-      <h2 id="clients-heading" className="clients__heading">
+      <h2 id="clients-heading" className="clients__heading" data-reveal style={revealDelay(100)}>
         Jobscan users have been hired by
       </h2>
 
       <ul className="clients__logos">
-        {clientLogos.map(({ src, alt, left, top, width, height, clip }) => (
-          <li key={src} className="clients__logo">
+        {clientLogos.map(({ src, alt, left, top, width, height, clip }, index) => (
+          <li key={src} className="clients__logo" data-reveal style={revealDelay(200 + index * 70)}>
             {clip ? (
               <span
                 className="clients__logo-clip"

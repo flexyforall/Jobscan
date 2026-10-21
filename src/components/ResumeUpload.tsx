@@ -1,14 +1,14 @@
-import { useId, useState, type DragEvent } from 'react'
+import { useId, useState, type DragEvent, type HTMLAttributes } from 'react'
 
 import { icons } from '../assets'
 import './ResumeUpload.css'
 
-type ResumeUploadProps = {
+type ResumeUploadProps = Omit<HTMLAttributes<HTMLLabelElement>, 'onDrop' | 'onDragOver'> & {
   variant: 'hero' | 'card'
   onFile?: (file: File) => void
 }
 
-export function ResumeUpload({ variant, onFile }: ResumeUploadProps) {
+export function ResumeUpload({ variant, onFile, ...rest }: ResumeUploadProps) {
   const inputId = useId()
   const [fileName, setFileName] = useState<string | null>(null)
 
@@ -25,6 +25,7 @@ export function ResumeUpload({ variant, onFile }: ResumeUploadProps) {
 
   return (
     <label
+      {...rest}
       className={`resume-upload resume-upload--${variant}`}
       htmlFor={inputId}
       onDragOver={(event) => event.preventDefault()}

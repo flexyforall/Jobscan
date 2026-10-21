@@ -1,7 +1,11 @@
+import { useRef } from 'react'
+
 import { icons } from '../assets'
+import { revealDelay, useInView } from '../intro'
+import { CountUp } from './CountUp'
 import { KeywordIcon, type KeywordStatus } from './KeywordIcon'
-import { ProgressiveBlur } from './ProgressiveBlur'
 import { ResumeUpload } from './ResumeUpload'
+import { RevealText } from './RevealText'
 import './ScanCard.css'
 
 type Metric = {
@@ -36,34 +40,45 @@ const legend: { label: string; status: KeywordStatus }[] = [
 ]
 
 export function ScanCard() {
+  const ref = useRef<HTMLDivElement>(null)
+  const inView = useInView(ref)
+
   return (
-    <div className="scan-card">
+    <div ref={ref} className="scan-card">
       <div className="scan-card__score">
-        <div className="scan-card__chart">
+        <div className="scan-card__chart" data-reveal="wipe" style={revealDelay(200)}>
           <img src={icons.scoreChart} alt="" />
         </div>
-        <div className="scan-card__score-content">
-          <p className="scan-card__score-value">88%</p>
+        <div className="scan-card__score-content" data-reveal="scale" style={revealDelay(150)}>
+          <p className="scan-card__score-value">
+            <CountUp value={88} suffix="%" start={inView} delay={250} />
+          </p>
           <p className="scan-card__score-label">ATS Match Score</p>
         </div>
       </div>
 
       <h3 className="scan-card__heading">
-        Scan your resume. Beat th<span className="scan-card__heading-muted">e ATS.</span>
+        <RevealText
+          lines={['Scan your resume. Beat the ATS.']}
+          start={inView}
+          delay={500}
+          blur={{ width: 117, height: 52, offsetY: 2 }}
+        />
       </h3>
 
       <div className="scan-card__details">
         <ul className="scan-card__metrics">
-          {metrics.map(({ label, value, status, bar, marker }) => (
+          {metrics.map(({ label, value, status, bar, marker }, index) => (
             <li key={label} className="scan-card__metric">
-              <img className="scan-card__metric-bar" src={bar} alt="" />
-              <div className="scan-card__metric-content">
+              <img className="scan-card__metric-bar" src={bar} alt="" data-reveal="wipe" style={revealDelay(400 + index * 150)} />
+              <div className="scan-card__metric-content" data-reveal="fade" style={revealDelay(500 + index * 150)}>
                 <span className="scan-card__metric-label">{label}</span>
                 <span className={`scan-card__metric-value scan-card__metric-value--${status}`}>{value}</span>
               </div>
               <span
                 className={`scan-card__metric-marker scan-card__metric-marker--${status}`}
-                style={{ left: marker }}
+                style={{ left: marker, ...revealDelay(900 + index * 150) }}
+                data-reveal="scale"
               />
             </li>
           ))}
@@ -71,15 +86,20 @@ export function ScanCard() {
 
         <div className="scan-card__keywords">
           <ul className="scan-card__keyword-list">
-            {keywords.map(({ label, status }) => (
-              <li key={label} className={`keyword-badge keyword-badge--${status}`}>
+            {keywords.map(({ label, status }, index) => (
+              <li
+                key={label}
+                className={`keyword-badge keyword-badge--${status}`}
+                data-reveal="scale"
+                style={revealDelay(900 + index * 70)}
+              >
                 <KeywordIcon status={status} />
                 <span className="keyword-badge__label">{label}</span>
               </li>
             ))}
           </ul>
 
-          <ul className="scan-card__legend">
+          <ul className="scan-card__legend" data-reveal="fade" style={revealDelay(1400)}>
             {legend.map(({ label, status }) => (
               <li key={label} className="scan-card__legend-item">
                 <span className={`scan-card__legend-badge keyword-badge--${status}`}>
@@ -92,9 +112,7 @@ export function ScanCard() {
         </div>
       </div>
 
-      <ResumeUpload variant="card" />
-
-      <ProgressiveBlur className="scan-card__heading-blur" radius={10} />
+      <ResumeUpload variant="card" data-reveal style={revealDelay(600)} />
     </div>
   )
 }

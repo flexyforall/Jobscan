@@ -1,0 +1,57 @@
+/*
+ * Entrance animations. The revealed state is opacity 1, so `data-reveal` must not be
+ * put on elements that have their own opacity in the design.
+ * Elements opt in with `data-reveal` (optionally a variant)
+ * and get `is-revealed` from useRevealOnScroll(). The individual `translate` / `scale`
+ * properties are used so existing `transform`s on the same elements keep working.
+ */
+
+[data-reveal] {
+  opacity: 0;
+  translate: 0 16px;
+  transition:
+    opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+    translate 0.9s cubic-bezier(0.2, 0.7, 0.2, 1),
+    scale 0.9s cubic-bezier(0.2, 0.7, 0.2, 1),
+    clip-path 1.1s cubic-bezier(0.65, 0, 0.35, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+[data-reveal='fade'] {
+  translate: none;
+}
+
+[data-reveal='scale'] {
+  translate: none;
+  scale: 0.94;
+}
+
+/* Left-to-right wipe for bars and charts (negative insets keep overflowing parts visible). */
+[data-reveal='wipe'] {
+  opacity: 1;
+  translate: none;
+  clip-path: inset(-50px 100% -50px -50px);
+}
+
+[data-reveal].is-revealed {
+  opacity: 1;
+  translate: none;
+  scale: none;
+}
+
+[data-reveal='wipe'].is-revealed {
+  clip-path: inset(-50px -50px -50px -50px);
+}
+
+[data-reveal='wipe'].is-settled {
+  clip-path: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    transition: opacity 0.3s linear;
+    translate: none;
+    scale: none;
+    clip-path: none;
+  }
+}

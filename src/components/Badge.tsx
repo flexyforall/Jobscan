@@ -1,19 +1,18 @@
-import type { ReactNode } from 'react'
+import type { HTMLAttributes, ReactNode } from 'react'
 
 import './Badge.css'
 
 type BadgeTone = 'sand' | 'success' | 'glass'
 
-type BadgeProps = {
+type BadgeProps = HTMLAttributes<HTMLSpanElement> & {
   tone: BadgeTone
   icon: string
   children: ReactNode
-  className?: string
 }
 
-export function Badge({ tone, icon, children, className }: BadgeProps) {
+export function Badge({ tone, icon, children, className, ...rest }: BadgeProps) {
   return (
-    <span className={['badge', `badge--${tone}`, className].filter(Boolean).join(' ')}>
+    <span className={['badge', `badge--${tone}`, className].filter(Boolean).join(' ')} {...rest}>
       <span className="badge__icon">
         <img src={icon} alt="" />
       </span>
