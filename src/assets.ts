@@ -1,5 +1,7 @@
 // Static assets exported from Figma (served from /public/assets).
-const icon = (name: string) => `/assets/icons/${name}.svg`
+// Prefixed with the Vite base URL so the build also works from a sub-path.
+const asset = (path: string) => `${import.meta.env.BASE_URL}assets/${path}`
+const icon = (name: string) => asset(`icons/${name}.svg`)
 
 export const icons = {
   logoMark: icon('logo-mark'),
@@ -33,16 +35,16 @@ export const icons = {
 } as const
 
 export const logos = {
-  companyLogo1: '/assets/logos/company-logo-1.png',
-  leanSolutions: '/assets/logos/lean-solutions.png',
-  amazon: '/assets/logos/amazon.svg',
-  nvidia: '/assets/logos/nvidia.svg',
-  google: '/assets/logos/google.png',
-  meta: '/assets/logos/meta.svg',
-  companyLogo7: '/assets/logos/company-logo-7.png',
+  companyLogo1: asset('logos/company-logo-1.png'),
+  leanSolutions: asset('logos/lean-solutions.png'),
+  amazon: asset('logos/amazon.svg'),
+  nvidia: asset('logos/nvidia.svg'),
+  google: asset('logos/google.png'),
+  meta: asset('logos/meta.svg'),
+  companyLogo7: asset('logos/company-logo-7.png'),
 } as const
 
 export const images = {
-  resumePanelBg: '/assets/images/resume-panel-bg.png',
-  contentSectionBg: '/assets/images/content-section-bg.jpg',
+  resumePanelBg: asset('images/resume-panel-bg.png'),
+  contentSectionBg: asset('images/content-section-bg.jpg'),
 } as const
