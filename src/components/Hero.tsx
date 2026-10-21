@@ -23,7 +23,7 @@ function MetricDivider({ delay }: { delay: number }) {
 }
 
 // Entrance timeline, in ms after the loader window starts opening (it fills the screen
-// in ~2.2s). The heading's reveal starts as soon as the page is fully shown.
+// in ~2.2s).
 const T = {
   panel: 500,
   heading: 700,
@@ -31,7 +31,8 @@ const T = {
   lead: 900,
   upload: 1100,
   metrics: 1300,
-  sweepAfterShown: 150,
+  // Starts as the window finishes opening, right after the other texts.
+  sweep: 1500,
 }
 
 export function Hero() {
@@ -48,9 +49,10 @@ export function Hero() {
           <h1 className="hero__heading">
             <RevealText
               lines={['Your job search,', 'on autopilot']}
-              start={stage === 'done'}
-              delay={T.sweepAfterShown}
+              start={started}
+              delay={T.sweep}
               enterDelay={T.heading}
+              speed={0.45}
             />
           </h1>
           <LinesText

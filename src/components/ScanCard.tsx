@@ -66,6 +66,7 @@ export function ScanCard() {
           start={inView}
           delay={T.sweep}
           enterDelay={T.heading}
+          speed={0.4}
         />
       </h3>
 

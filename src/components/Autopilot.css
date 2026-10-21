@@ -208,51 +208,72 @@
   min-height: 1px;
 }
 
-@property --scan-y {
-  syntax: '<length>';
-  inherits: true;
-  initial-value: 0px;
-}
-
 .autopilot__preview {
   position: relative;
   flex: 1 0 0;
   height: 100%;
   min-width: 1px;
   border-radius: 24px;
-  /* Offset of the scan line from its position in the design (y = 297px). */
-  --scan-y: 0px;
-  animation: preview-scan 7s infinite;
 }
 
-/* Down with acceleration to the bottom of the CV, back up to its top, home again. */
-@keyframes preview-scan {
-  0% {
-    --scan-y: 0px;
-    animation-timing-function: cubic-bezier(0.5, 0, 0.85, 0.6);
-  }
-  30% {
-    --scan-y: 210px;
-    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
-  }
-  80% {
-    --scan-y: -200px;
-    animation-timing-function: cubic-bezier(0.15, 0.4, 0.5, 1);
-  }
-  100% {
-    --scan-y: 0px;
-  }
-}
-
+/*
+ * Scanning loop (7s): down with acceleration to the bottom of the CV, back up to its
+ * top, home again. The scanner moves with a composited transform; the document's
+ * dissolve mask follows with the same keyframes and timing, so they stay in step.
+ * Offsets are from the line's position in the design (y = 297px).
+ */
 .autopilot__scanner {
   position: absolute;
   inset: 0;
-  translate: 0 var(--scan-y);
   pointer-events: none;
+  will-change: transform;
+  animation: preview-scan 7s infinite;
+}
+
+@keyframes preview-scan {
+  0% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.5, 0, 0.85, 0.6);
+  }
+  30% {
+    transform: translateY(210px);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  80% {
+    transform: translateY(-200px);
+    animation-timing-function: cubic-bezier(0.15, 0.4, 0.5, 1);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes preview-scan-mask {
+  0% {
+    -webkit-mask-position: 0 -770px;
+    mask-position: 0 -770px;
+    animation-timing-function: cubic-bezier(0.5, 0, 0.85, 0.6);
+  }
+  30% {
+    -webkit-mask-position: 0 -560px;
+    mask-position: 0 -560px;
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  80% {
+    -webkit-mask-position: 0 -970px;
+    mask-position: 0 -970px;
+    animation-timing-function: cubic-bezier(0.15, 0.4, 0.5, 1);
+  }
+  100% {
+    -webkit-mask-position: 0 -770px;
+    mask-position: 0 -770px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .autopilot__preview {
+  .autopilot__scanner,
+  .autopilot__document-sharp,
+  .autopilot__document-blurred {
     animation: none;
   }
 }
@@ -263,30 +284,46 @@
   top: calc(50% + 0.24px);
   width: 368.069px;
   transform: translate(-50%, -50%);
-  /*
-   * Below the scan line the CV dissolves downwards instead of ending in a hard-edged
-   * blurred rectangle. The line sits ~230px below the document's top in the design.
-   */
+}
+
+/*
+ * Masks are tall gradients (1600px) whose edge at 1000px sits on the scan line, ~230px
+ * below the document top in the design; `preview-scan-mask` moves them with the line.
+ */
+.autopilot__document-sharp,
+.autopilot__document-blurred {
+  -webkit-mask-size: 100% 1600px;
+  mask-size: 100% 1600px;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: 0 -770px;
+  mask-position: 0 -770px;
+  animation: preview-scan-mask 7s infinite;
+}
+
+.autopilot__document-sharp {
+  -webkit-mask-image: linear-gradient(to bottom, #000 1000px, transparent 1080px);
+  mask-image: linear-gradient(to bottom, #000 1000px, transparent 1080px);
+}
+
+.autopilot__document-blurred {
+  position: absolute;
+  inset: 0;
+  filter: blur(4px);
   -webkit-mask-image: linear-gradient(
     to bottom,
-    #000 calc(230px + var(--scan-y)),
-    rgb(0 0 0 / 0.35) calc(330px + var(--scan-y)),
-    transparent calc(480px + var(--scan-y))
+    transparent 995px,
+    #000 1060px,
+    rgb(0 0 0 / 0.4) 1150px,
+    transparent 1260px
   );
   mask-image: linear-gradient(
     to bottom,
-    #000 calc(230px + var(--scan-y)),
-    rgb(0 0 0 / 0.35) calc(330px + var(--scan-y)),
-    transparent calc(480px + var(--scan-y))
+    transparent 995px,
+    #000 1060px,
+    rgb(0 0 0 / 0.4) 1150px,
+    transparent 1260px
   );
-}
-
-.autopilot__preview-blur {
-  left: -40px;
-  top: 297px;
-  /* 1324px at 1440: past the card to the panel's edge. */
-  width: calc(100% + 716px);
-  height: 365px;
 }
 
 .autopilot__scanline {

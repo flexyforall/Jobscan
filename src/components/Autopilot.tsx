@@ -10,7 +10,6 @@ import {
 } from '../lib/custom-effects/CodeComponentId_40f03f78407c1c973fc891fbca9ff3d0387485e6_435'
 import { Badge } from './Badge'
 import { LinesText } from './LinesText'
-import { ProgressiveBlur } from './ProgressiveBlur'
 import { ResumeDocument } from './ResumeDocument'
 import { ScanCard } from './ScanCard'
 import './Autopilot.css'
@@ -106,18 +105,16 @@ export function Autopilot() {
           <div className="autopilot__panel-bg" data-reveal="fade" style={revealDelay(300)} />
           <div className="autopilot__feature">
             <div className="autopilot__preview" aria-hidden>
-              <ResumeDocument size="compact" className="autopilot__document" data-reveal style={revealDelay(500)} />
-              {/* Scan line, its glow and the blur below it travel up and down together. */}
+              {/*
+                Sharp CV above the scan line, a pre-blurred copy below it that dissolves
+                downwards. Only the masks move with the line, so nothing is re-blurred per frame.
+              */}
+              <div className="autopilot__document" data-reveal style={revealDelay(500)}>
+                <ResumeDocument size="compact" className="autopilot__document-sharp" />
+                <ResumeDocument size="compact" className="autopilot__document-blurred" aria-hidden />
+              </div>
               <div className="autopilot__scanner">
-                <ProgressiveBlur
-                  className="autopilot__preview-blur"
-                  radius={32}
-                  direction="to bottom"
-                  steps={8}
-                  data-reveal="fade"
-                  style={revealDelay(650)}
-                />
-                <div className="autopilot__scanline" data-reveal="fade" style={revealDelay(750)}>
+                <div className="autopilot__scanline" data-reveal="fade" style={revealDelay(650)}>
                   <span className="autopilot__scan-glow" />
                   <span className="autopilot__scan-line" />
                   <span className="autopilot__scan-marker autopilot__scan-marker--left" />
