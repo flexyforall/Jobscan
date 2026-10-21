@@ -69,7 +69,7 @@ export function Autopilot() {
       </div>
 
       <div className="autopilot__tabs">
-        <div className="autopilot__tab-list" role="tablist" aria-label="Autopilot features" data-reveal style={revealDelay(900)}>
+        <div className="autopilot__tab-list" role="tablist" aria-label="Autopilot features" data-reveal style={revealDelay(450)}>
           {tabs.map(({ id, label, icon }) => {
             const isActive = id === activeTab
             return (
@@ -103,23 +103,26 @@ export function Autopilot() {
           aria-labelledby={`autopilot-tab-${activeTab}`}
         >
           {/* Faded on its own layer: opacity on the panel would cut nested backdrop blurs off from the section background. */}
-          <div className="autopilot__panel-bg" data-reveal="fade" style={revealDelay(1100)} />
+          <div className="autopilot__panel-bg" data-reveal="fade" style={revealDelay(300)} />
           <div className="autopilot__feature">
             <div className="autopilot__preview" aria-hidden>
-              <ResumeDocument size="compact" className="autopilot__document" data-reveal style={revealDelay(1400)} />
-              <ProgressiveBlur
-                className="autopilot__preview-blur"
-                radius={32}
-                direction="to bottom"
-                steps={8}
-                data-reveal="fade"
-                style={revealDelay(1700)}
-              />
-              <div className="autopilot__scanline" data-reveal="fade" style={revealDelay(1900)}>
-                <span className="autopilot__scan-glow" />
-                <span className="autopilot__scan-line" />
-                <span className="autopilot__scan-marker autopilot__scan-marker--left" />
-                <span className="autopilot__scan-marker autopilot__scan-marker--right" />
+              <ResumeDocument size="compact" className="autopilot__document" data-reveal style={revealDelay(500)} />
+              {/* Scan line, its glow and the blur below it travel up and down together. */}
+              <div className="autopilot__scanner">
+                <ProgressiveBlur
+                  className="autopilot__preview-blur"
+                  radius={32}
+                  direction="to bottom"
+                  steps={8}
+                  data-reveal="fade"
+                  style={revealDelay(650)}
+                />
+                <div className="autopilot__scanline" data-reveal="fade" style={revealDelay(750)}>
+                  <span className="autopilot__scan-glow" />
+                  <span className="autopilot__scan-line" />
+                  <span className="autopilot__scan-marker autopilot__scan-marker--left" />
+                  <span className="autopilot__scan-marker autopilot__scan-marker--right" />
+                </div>
               </div>
             </div>
             <ScanCard />

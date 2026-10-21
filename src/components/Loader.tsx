@@ -15,7 +15,7 @@ type Phase = 'loading' | 'opening' | 'expanding'
 // The counter never runs faster than this, so the loading state stays readable on fast connections.
 const MIN_LOADING_MS = 4200
 const OPENING_MS = 450
-const EXPAND_MS = 3200
+const EXPAND_MS = 2200
 
 function trackPageAssets(onProgress: (ratio: number) => void) {
   const images = Array.from(document.images)

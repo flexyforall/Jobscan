@@ -40,11 +40,11 @@ const legend: { label: string; status: KeywordStatus }[] = [
 ]
 
 // Entrance timeline, in ms after the card scrolls into view.
-const T = { card: 900, score: 1500, heading: 1700, metrics: 2200, keywords: 3000, upload: 3200, sweep: 3600 }
+const T = { card: 250, score: 500, heading: 450, metrics: 800, keywords: 1300, upload: 1400, sweep: 900 }
 
 export function ScanCard() {
   const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, 0.5)
+  const inView = useInView(ref, 0.3)
 
   return (
     <div ref={ref} className="scan-card" data-reveal style={revealDelay(T.card)}>
@@ -66,7 +66,6 @@ export function ScanCard() {
           start={inView}
           delay={T.sweep}
           enterDelay={T.heading}
-          endBlur={{ width: 117, height: 52, offsetY: 2, overhang: 57 }}
         />
       </h3>
 

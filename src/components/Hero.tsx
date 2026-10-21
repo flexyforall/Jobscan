@@ -22,16 +22,16 @@ function MetricDivider({ delay }: { delay: number }) {
   )
 }
 
-// Entrance timeline, in ms after the loader window starts opening (it takes ~3.2s to fill
-// the screen). The heading's colour sweep only starts once the page is fully shown.
+// Entrance timeline, in ms after the loader window starts opening (it fills the screen
+// in ~2.2s). The heading's reveal starts as soon as the page is fully shown.
 const T = {
-  panel: 1500,
-  heading: 1900,
-  badge: 2100,
-  lead: 2200,
-  upload: 2500,
-  metrics: 2800,
-  sweepAfterShown: 700,
+  panel: 500,
+  heading: 700,
+  badge: 800,
+  lead: 900,
+  upload: 1100,
+  metrics: 1300,
+  sweepAfterShown: 150,
 }
 
 export function Hero() {
@@ -51,7 +51,6 @@ export function Hero() {
               start={stage === 'done'}
               delay={T.sweepAfterShown}
               enterDelay={T.heading}
-              endBlur={{ width: 109, height: 80, offsetY: 3, overhang: 20 }}
             />
           </h1>
           <LinesText
@@ -84,14 +83,14 @@ export function Hero() {
         </div>
       </div>
 
-      <div className="resume-panel" aria-hidden data-reveal="scale" style={revealDelay(T.panel - 1000)}>
+      <div className="resume-panel" aria-hidden data-reveal="scale" style={revealDelay(0)}>
         <div className="resume-panel__bg">
           <img src={images.resumePanelBg} alt="" />
         </div>
 
         {/* Composition from Figma, kept centred when the panel is wider than 620px. */}
         <div className="resume-panel__stage">
-          <ResumeDocument className="resume-panel__document" data-reveal style={revealDelay(T.panel - 600)} />
+          <ResumeDocument className="resume-panel__document" data-reveal style={revealDelay(T.panel - 300)} />
 
           <div className="resume-panel__score" data-reveal="scale" style={revealDelay(T.panel + 400)}>
             <div className="resume-panel__score-display">

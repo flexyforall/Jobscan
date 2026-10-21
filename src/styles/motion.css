@@ -21,10 +21,6 @@
   translate: none;
 }
 
-/* Movement only, for containers whose children fade on their own. */
-[data-reveal][data-reveal='rise'] {
-  opacity: 1;
-}
 
 [data-reveal='scale'] {
   translate: none;
