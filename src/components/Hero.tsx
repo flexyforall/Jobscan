@@ -23,16 +23,16 @@ function MetricDivider({ delay }: { delay: number }) {
 }
 
 // Entrance timeline, in ms after the loader window starts opening (it fills the screen
-// in ~2.2s).
+// in ~2.2s, and the left column is in view from ~1.6s). The heading reveal starts first;
+// the other texts rise in while it runs, late enough to be seen.
 const T = {
   panel: 500,
-  heading: 700,
-  badge: 800,
-  lead: 900,
-  upload: 1100,
-  metrics: 1300,
-  // Starts as the window finishes opening, right after the other texts.
-  sweep: 1500,
+  heading: 400,
+  sweep: 1000,
+  badge: 1500,
+  lead: 1700,
+  upload: 2000,
+  metrics: 2300,
 }
 
 export function Hero() {

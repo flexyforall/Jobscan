@@ -21,9 +21,27 @@ export function LinesText({ as = 'p', text = '', lines: givenLines, delay = 0, s
   const [measured, setMeasured] = useState<string[] | null>(null)
   const lines = givenLines ?? measured
 
+  // Re-split when the available width changes (window resize, embedding frame resizing),
+  // so the lines always match the real wrapping.
+  const [width, setWidth] = useState(0)
+  useLayoutEffect(() => {
+    const element = ref.current
+    if (givenLines || !element) return
+    let lastWidth = element.getBoundingClientRect().width
+    const observer = new ResizeObserver(([entry]) => {
+      const next = entry?.contentRect.width ?? lastWidth
+      if (Math.abs(next - lastWidth) < 0.5) return
+      lastWidth = next
+      setMeasured(null)
+      setWidth(next)
+    })
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [givenLines])
+
   // Group the words by the line they render on, once the web fonts are in.
   useLayoutEffect(() => {
-    if (givenLines) return
+    if (givenLines || measured) return
     let cancelled = false
     void document.fonts.ready.then(() => {
       const element = ref.current
@@ -40,7 +58,7 @@ export function LinesText({ as = 'p', text = '', lines: givenLines, delay = 0, s
     return () => {
       cancelled = true
     }
-  }, [givenLines, text])
+  }, [givenLines, text, width, measured])
 
   const content = lines
     ? lines.map((line, index) => (

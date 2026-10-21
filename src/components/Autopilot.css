@@ -310,19 +310,20 @@
   position: absolute;
   inset: 0;
   filter: blur(4px);
+  /* Never fades out completely: the CV's silhouette stays visible below the line. */
   -webkit-mask-image: linear-gradient(
     to bottom,
     transparent 995px,
     #000 1060px,
-    rgb(0 0 0 / 0.4) 1150px,
-    transparent 1260px
+    rgb(0 0 0 / 0.55) 1150px,
+    rgb(0 0 0 / 0.35) 1300px
   );
   mask-image: linear-gradient(
     to bottom,
     transparent 995px,
     #000 1060px,
-    rgb(0 0 0 / 0.4) 1150px,
-    transparent 1260px
+    rgb(0 0 0 / 0.55) 1150px,
+    rgb(0 0 0 / 0.35) 1300px
   );
 }
 
