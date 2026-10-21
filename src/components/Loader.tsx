@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { prefersReducedMotion } from '../intro'
 import './Loader.css'
@@ -12,15 +12,18 @@ type LoaderProps = {
 
 type Phase = 'loading' | 'opening' | 'expanding'
 
-// The bar never fills faster than this, so the loading state stays readable on fast connections.
-const MIN_LOADING_MS = 1600
-const OPENING_MS = 350
+// The counter never runs faster than this, so the loading state stays readable on fast connections.
+const MIN_LOADING_MS = 4200
+const OPENING_MS = 450
+const EXPAND_MS = 3200
 
 function trackPageAssets(onProgress: (ratio: number) => void) {
   const images = Array.from(document.images)
   const tasks: Promise<unknown>[] = [
     document.fonts.ready,
-    new Promise((resolve) => (document.readyState === 'complete' ? resolve(null) : window.addEventListener('load', resolve, { once: true }))),
+    new Promise((resolve) =>
+      document.readyState === 'complete' ? resolve(null) : window.addEventListener('load', resolve, { once: true }),
+    ),
     ...images.map((image) =>
       image.complete
         ? Promise.resolve()
@@ -31,7 +34,6 @@ function trackPageAssets(onProgress: (ratio: number) => void) {
     ),
   ]
   let settled = 0
-  onProgress(0)
   tasks.forEach((task) =>
     task.finally(() => {
       settled += 1
@@ -40,18 +42,129 @@ function trackPageAssets(onProgress: (ratio: number) => void) {
   )
 }
 
+const easeInOutSine = (t: number) => -(Math.cos(Math.PI * t) - 1) / 2
+// Accelerates towards the end, with a little initial speed so the start never looks stuck.
+const easeExpand = (t: number) => 0.12 * t + 0.88 * t * t * t
+
+/** Monotone cubic interpolation (Fritsch–Carlson): smooth and never overshoots. */
+function monotoneCubic(xs: number[], ys: number[]) {
+  const n = xs.length
+  const d = xs.slice(1).map((x, i) => (ys[i + 1]! - ys[i]!) / (x - xs[i]!))
+  const m = xs.map((_, i) => {
+    if (i === 0) return d[0]!
+    if (i === n - 1) return d[n - 2]!
+    return d[i - 1]! * d[i]! <= 0 ? 0 : (d[i - 1]! + d[i]!) / 2
+  })
+  for (let i = 0; i < n - 1; i++) {
+    if (d[i] === 0) {
+      m[i] = 0
+      m[i + 1] = 0
+      continue
+    }
+    const a = m[i]! / d[i]!
+    const b = m[i + 1]! / d[i]!
+    const s = a * a + b * b
+    if (s > 9) {
+      const k = 3 / Math.sqrt(s)
+      m[i] = k * a * d[i]!
+      m[i + 1] = k * b * d[i]!
+    }
+  }
+  return (x: number) => {
+    let i = 0
+    while (i < n - 2 && x > xs[i + 1]!) i++
+    const h = xs[i + 1]! - xs[i]!
+    const t = (x - xs[i]!) / h
+    const t2 = t * t
+    const t3 = t2 * t
+    return (
+      (2 * t3 - 3 * t2 + 1) * ys[i]! +
+      (t3 - 2 * t2 + t) * h * m[i]! +
+      (-2 * t3 + 3 * t2) * ys[i + 1]! +
+      (t3 - t2) * h * m[i + 1]!
+    )
+  }
+}
+
+/** Page-coloured backdrop with a rounded-rectangle hole in the middle of the viewport. */
+function backdropClip(vw: number, vh: number, w: number, h: number, r: number) {
+  const x = (vw - w) / 2
+  const y = (vh - h) / 2
+  const hole =
+    r > 0
+      ? `M${x + r} ${y}H${x + w - r}A${r} ${r} 0 0 1 ${x + w} ${y + r}V${y + h - r}A${r} ${r} 0 0 1 ${x + w - r} ${y + h}` +
+        `H${x + r}A${r} ${r} 0 0 1 ${x} ${y + h - r}V${y + r}A${r} ${r} 0 0 1 ${x + r} ${y}Z`
+      : `M${x} ${y}H${x + w}V${y + h}H${x}Z`
+  return `path(evenodd, "M0 0H${vw}V${vh}H0Z${hole}")`
+}
+
+/**
+ * Ticks of the percentage badge: identical 1×8px bars placed evenly along a rounded
+ * square and turned to face outwards, so every tick has the same size, corners included.
+ */
+function useRingTicks() {
+  return useMemo(() => {
+    const size = 33 // centre line of the 8px band inside the 41px ring
+    const radius = 6
+    const straight = size - 2 * radius
+    const arc = (Math.PI / 2) * radius
+    const perimeter = 4 * (straight + arc)
+    const count = 44
+    const origin = 4 // band centre line offset inside the 41px box
+    const ticks: { x: number; y: number; angle: number }[] = []
+    for (let i = 0; i < count; i++) {
+      // Start from the middle of the top edge, clockwise.
+      let s = (((i / count) * perimeter + straight / 2) % perimeter + perimeter) % perimeter
+      let x = 0
+      let y = 0
+      let angle = 0
+      for (let side = 0; side < 4; side++) {
+        if (s <= straight) {
+          const along = radius + s
+          const points = [
+            [along, 0, 0],
+            [size, along, 90],
+            [size - along, size, 180],
+            [0, size - along, 270],
+          ][side]!
+          ;[x, y, angle] = points as [number, number, number]
+          break
+        }
+        s -= straight
+        if (s <= arc) {
+          const theta = (s / radius) * (180 / Math.PI) // 0..90
+          const centres = [
+            [size - radius, radius],
+            [size - radius, size - radius],
+            [radius, size - radius],
+            [radius, radius],
+          ][side]!
+          angle = side * 90 + theta
+          const rad = ((angle - 90) * Math.PI) / 180
+          x = centres[0]! + radius * Math.cos(rad)
+          y = centres[1]! + radius * Math.sin(rad)
+          break
+        }
+        s -= arc
+      }
+      ticks.push({ x: x + origin, y: y + origin, angle })
+    }
+    return ticks
+  }, [])
+}
+
 export function Loader({ onReveal, onDone }: LoaderProps) {
   const [phase, setPhase] = useState<Phase>('loading')
   const [percent, setPercent] = useState(0)
-  const windowRef = useRef<HTMLDivElement>(null)
+  const backdropRef = useRef<HTMLDivElement>(null)
+  const ticks = useRingTicks()
 
-  // Loading: follow the real asset progress, smoothed and rate-limited.
+  // Loading: follow the real asset progress, never faster than an eased minimum curve.
   useEffect(() => {
-    const reducedMotion = prefersReducedMotion()
-    const maxRate = 100 / (reducedMotion ? 300 : MIN_LOADING_MS)
+    const minDuration = prefersReducedMotion() ? 300 : MIN_LOADING_MS
+    const startedAt = performance.now()
     let target = 0
     let shown = 0
-    let last = performance.now()
     let frame = 0
 
     trackPageAssets((ratio) => {
@@ -59,13 +172,11 @@ export function Loader({ onReveal, onDone }: LoaderProps) {
     })
 
     const tick = (now: number) => {
-      const dt = now - last
-      last = now
-      shown = Math.min(target, shown + maxRate * dt, shown + (target - shown) * 0.12 + 0.2)
+      const cap = 100 * easeInOutSine(Math.min(1, (now - startedAt) / minDuration))
+      shown = Math.max(shown, Math.min(target, cap))
       setPercent(Math.floor(shown))
       if (shown >= 100) {
-        setPercent(100)
-        window.setTimeout(() => setPhase('opening'), 200)
+        window.setTimeout(() => setPhase('opening'), 300)
         return
       }
       frame = requestAnimationFrame(tick)
@@ -74,35 +185,45 @@ export function Loader({ onReveal, onDone }: LoaderProps) {
     return () => cancelAnimationFrame(frame)
   }, [])
 
-  // Opening: the square loses its fill and becomes a window onto the page.
+  // Opening: the badge fades, leaving a window onto the page.
   useEffect(() => {
     if (phase !== 'opening') return
     const timer = window.setTimeout(() => setPhase('expanding'), OPENING_MS)
     return () => window.clearTimeout(timer)
   }, [phase])
 
-  // Expanding: square → 160×56 → 622×218 → full viewport (sizes from the storyboard).
+  // Expanding: one continuous, accelerating motion through the storyboard sizes
+  // 56×56 → 160×56 → 622×218 → full viewport.
   useEffect(() => {
     if (phase !== 'expanding') return
     onReveal()
-    const element = windowRef.current
-    if (!element || prefersReducedMotion()) {
+    const backdrop = backdropRef.current
+    if (!backdrop || prefersReducedMotion()) {
       onDone()
       return
     }
-    const full = { width: `${window.innerWidth}px`, height: `${window.innerHeight}px` }
-    const easing = 'cubic-bezier(0.65, 0, 0.35, 1)'
-    const animation = element.animate(
-      [
-        { width: '56px', height: '56px', borderRadius: '8px', offset: 0, easing },
-        { width: '160px', height: '56px', borderRadius: '8px', offset: 0.22, easing },
-        { width: '622px', height: '218px', borderRadius: '8px', offset: 0.55, easing },
-        { ...full, borderRadius: '0px', offset: 1 },
-      ],
-      { duration: 2000, fill: 'forwards' },
-    )
-    animation.finished.then(onDone, () => undefined)
-    return () => animation.cancel()
+    const vw = window.innerWidth
+    const vh = window.innerHeight
+    const stops = [0, 0.2, 0.5, 1]
+    const width = monotoneCubic(stops, [56, 160, 622, vw].map(Math.log))
+    const height = monotoneCubic(stops, [56, 56, 218, vh].map(Math.log))
+
+    let frame = 0
+    let startedAt: number | null = null
+    const tick = (now: number) => {
+      startedAt ??= now
+      const t = Math.min(1, (now - startedAt) / EXPAND_MS)
+      const p = easeExpand(t)
+      const w = Math.min(vw, Math.exp(width(p)))
+      const h = Math.min(vh, Math.exp(height(p)))
+      // Corners straighten out as the window meets the viewport edges.
+      const r = 8 * Math.min(1, (vw - w) / 60, (vh - h) / 60)
+      backdrop.style.clipPath = backdropClip(vw, vh, w, h, Math.max(0, r))
+      if (t < 1) frame = requestAnimationFrame(tick)
+      else onDone()
+    }
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
   }, [phase, onReveal, onDone])
 
   // Keep the page still and at the top while the loader is up.
@@ -118,7 +239,11 @@ export function Loader({ onReveal, onDone }: LoaderProps) {
 
   return (
     <div className={`loader loader--${phase}`} role="status" aria-live="polite" aria-label={`Loading ${percent}%`}>
-      <div ref={windowRef} className="loader__window" />
+      <div
+        ref={backdropRef}
+        className="loader__backdrop"
+        style={{ clipPath: backdropClip(window.innerWidth, window.innerHeight, 56, 56, 8) }}
+      />
 
       <div className="loader__scan" aria-hidden>
         <span className="loader__scan-glow" />
@@ -128,8 +253,10 @@ export function Loader({ onReveal, onDone }: LoaderProps) {
       </div>
 
       <div className="loader__badge" aria-hidden>
-        <svg className="loader__ring" width="41" height="41" viewBox="0 0 41 41" fill="none">
-          <rect x="4" y="4" width="33" height="33" rx="2" stroke="white" strokeWidth="8" strokeDasharray="1 2" />
+        <svg className="loader__ring" width="41" height="41" viewBox="0 0 41 41">
+          {ticks.map(({ x, y, angle }, index) => (
+            <rect key={index} x={x - 0.5} y={y - 4} width="1" height="8" fill="white" transform={`rotate(${angle} ${x} ${y})`} />
+          ))}
         </svg>
         <span className="loader__percent">{percent}%</span>
       </div>

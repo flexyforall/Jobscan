@@ -54,10 +54,24 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  width: var(--page-width);
+  width: max-content;
   margin: 0;
   padding: 0;
   list-style: none;
+  animation: clients-marquee 42s linear infinite;
+}
+
+/* One copy of the list: 7 logos × (200px + 8px gap). */
+@keyframes clients-marquee {
+  to {
+    transform: translateX(-1456px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clients__logos {
+    animation: none;
+  }
 }
 
 .clients__logo {

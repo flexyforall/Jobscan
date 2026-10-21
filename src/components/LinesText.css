@@ -1,0 +1,33 @@
+/* Each line is clipped, and its content rises from below the line into place. */
+.lines-text__line {
+  display: block;
+  /* Clip to the line, with room for ascenders/descenders; unlike overflow, no layout impact. */
+  clip-path: inset(-0.15em -0.1em -0.25em -0.1em);
+}
+
+.lines-text__inner {
+  display: block;
+  opacity: 0;
+  translate: 0 105%;
+  transition:
+    translate 1.4s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 1.2s cubic-bezier(0.33, 1, 0.68, 1);
+  transition-delay: calc(var(--reveal-delay, 0ms) + var(--line-index, 0) * 140ms);
+}
+
+[data-reveal][data-reveal='lines'] {
+  opacity: 1;
+  translate: none;
+}
+
+.is-revealed .lines-text__inner {
+  opacity: 1;
+  translate: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lines-text__inner {
+    translate: none;
+    transition: opacity 0.3s linear;
+  }
+}

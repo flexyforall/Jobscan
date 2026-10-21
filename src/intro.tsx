@@ -58,8 +58,9 @@ export function useRevealOnScroll(stage: IntroStage) {
         element.addEventListener('transitionend', settle)
       }
     }
-    // A fully clipped element (the `wipe` variant) never reports as intersecting,
-    // so those are tracked through their parent.
+    // A fully clipped element (the `wipe` variant) never reports as intersecting, so it is
+    // tracked through its parent; elements inside a `[data-reveal-root]` (e.g. the moving
+    // logo row) are revealed when that root comes into view.
     const targets = new Map<Element, Element[]>()
     const observer = new IntersectionObserver(
       (entries) => {
@@ -72,7 +73,8 @@ export function useRevealOnScroll(stage: IntroStage) {
       { threshold: 0.15 },
     )
     document.querySelectorAll<HTMLElement>('[data-reveal]:not(.is-revealed)').forEach((element) => {
-      const target = element.dataset.reveal === 'wipe' && element.parentElement ? element.parentElement : element
+      const root = element.parentElement?.closest('[data-reveal-root]')
+      const target = root ?? (element.dataset.reveal === 'wipe' && element.parentElement ? element.parentElement : element)
       targets.set(target, [...(targets.get(target) ?? []), element])
       observer.observe(target)
     })

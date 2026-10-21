@@ -184,12 +184,11 @@
 }
 
 /*
- * The frosted background lives on a pseudo-element: a backdrop-filter on the panel
+ * The frosted background lives on its own layer: a backdrop-filter on the panel
  * itself would make it a backdrop root and hide the section background from the
  * progressive blur nested inside it.
  */
-.autopilot__panel::before {
-  content: '';
+.autopilot__panel-bg {
   position: absolute;
   inset: 0;
   border-radius: inherit;

@@ -9,6 +9,7 @@ import {
   setup as setupWaterCaustic,
 } from '../lib/custom-effects/CodeComponentId_40f03f78407c1c973fc891fbca9ff3d0387485e6_435'
 import { Badge } from './Badge'
+import { LinesText } from './LinesText'
 import { ProgressiveBlur } from './ProgressiveBlur'
 import { ResumeDocument } from './ResumeDocument'
 import { ScanCard } from './ScanCard'
@@ -53,17 +54,22 @@ export function Autopilot() {
         <Badge tone="glass" icon={icons.badgeAutopilot} data-reveal>
           Autopilot — launching Jan 4, 2027
         </Badge>
-        <h2 id="autopilot-heading" className="autopilot__heading" data-reveal style={revealDelay(100)}>
-          <span>One agent.</span>
-          <span>Your entire search.</span>
-        </h2>
-        <p className="autopilot__lead" data-reveal style={revealDelay(200)}>
-          You approve every application before it goes out. Autopilot handles everything else.
-        </p>
+        <LinesText
+          as="h2"
+          id="autopilot-heading"
+          className="autopilot__heading"
+          lines={['One agent.', 'Your entire search.']}
+          delay={200}
+        />
+        <LinesText
+          className="autopilot__lead"
+          text="You approve every application before it goes out. Autopilot handles everything else."
+          delay={600}
+        />
       </div>
 
       <div className="autopilot__tabs">
-        <div className="autopilot__tab-list" role="tablist" aria-label="Autopilot features" data-reveal style={revealDelay(250)}>
+        <div className="autopilot__tab-list" role="tablist" aria-label="Autopilot features" data-reveal style={revealDelay(900)}>
           {tabs.map(({ id, label, icon }) => {
             const isActive = id === activeTab
             return (
@@ -95,14 +101,21 @@ export function Autopilot() {
           className="autopilot__panel"
           role="tabpanel"
           aria-labelledby={`autopilot-tab-${activeTab}`}
-          data-reveal
-          style={revealDelay(350)}
         >
+          {/* Faded on its own layer: opacity on the panel would cut nested backdrop blurs off from the section background. */}
+          <div className="autopilot__panel-bg" data-reveal="fade" style={revealDelay(1100)} />
           <div className="autopilot__feature">
             <div className="autopilot__preview" aria-hidden>
-              <ResumeDocument size="compact" className="autopilot__document" data-reveal style={revealDelay(500)} />
-              <ProgressiveBlur className="autopilot__preview-blur" radius={32} direction="to bottom" steps={8} />
-              <div className="autopilot__scanline">
+              <ResumeDocument size="compact" className="autopilot__document" data-reveal style={revealDelay(1400)} />
+              <ProgressiveBlur
+                className="autopilot__preview-blur"
+                radius={32}
+                direction="to bottom"
+                steps={8}
+                data-reveal="fade"
+                style={revealDelay(1700)}
+              />
+              <div className="autopilot__scanline" data-reveal="fade" style={revealDelay(1900)}>
                 <span className="autopilot__scan-glow" />
                 <span className="autopilot__scan-line" />
                 <span className="autopilot__scan-marker autopilot__scan-marker--left" />

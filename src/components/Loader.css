@@ -18,25 +18,13 @@
 }
 
 /*
- * The window onto the page. Its huge spread shadow is the loader background, so
- * growing the window reveals the page underneath. Black while loading.
+ * Page-coloured backdrop with a window cut into it (clip-path set from JS). Growing the
+ * window reveals the page underneath; only this flat layer is re-clipped each frame.
  */
-.loader__window {
+.loader__backdrop {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 56px;
-  height: 56px;
-  border-radius: 8px;
-  background: var(--color-black);
-  box-shadow: 0 0 0 150vmax var(--color-page);
-  transform: translate(-50%, -50%);
-  transition: background-color 0.35s ease;
-}
-
-.loader--opening .loader__window,
-.loader--expanding .loader__window {
-  background-color: transparent;
+  inset: 0;
+  background: var(--color-page);
 }
 
 /* ---- Scan line (storyboard: Group 2 — glow, line, end markers) ---- */
@@ -55,8 +43,8 @@
   right: 0;
   top: 0;
   height: 160px;
-  animation: loader-scan 2.4s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
-  transition: opacity 0.35s ease;
+  animation: loader-scan 2.6s infinite;
+  transition: opacity 0.45s ease;
 }
 
 .loader--opening .loader__scan,
@@ -64,12 +52,18 @@
   opacity: 0;
 }
 
+/* Down with acceleration towards the bottom, then back up slowing towards the top. */
 @keyframes loader-scan {
-  from {
+  0% {
     translate: 0 0;
+    animation-timing-function: cubic-bezier(0.5, 0, 0.85, 0.6);
   }
-  to {
+  50% {
     translate: 0 calc(100vh - 160px);
+    animation-timing-function: cubic-bezier(0.15, 0.4, 0.5, 1);
+  }
+  100% {
+    translate: 0 0;
   }
 }
 
@@ -137,8 +131,8 @@
   background: var(--color-black);
   transform: translate(-50%, -50%);
   transition:
-    opacity 0.35s ease,
-    scale 0.35s ease;
+    opacity 0.45s ease,
+    scale 0.45s ease;
 }
 
 .loader--opening .loader__badge,

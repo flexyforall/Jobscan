@@ -1,26 +1,38 @@
 import { useEffect, useRef, useState } from 'react'
 
-import { prefersReducedMotion } from '../intro'
+import { prefersReducedMotion, revealDelay } from '../intro'
 import { ProgressiveBlur } from './ProgressiveBlur'
 import './RevealText.css'
 
 type RevealTextProps = {
   lines: string[]
-  /** Start the reveal (it runs once). */
+  /** Start the colour sweep (it runs once). */
   start: boolean
   delay?: number
-  /** Blur zone ahead of the reveal front, sized like the blur boxes in the Figma design. */
-  blur: { width: number; height: number; offsetY: number }
-  /** Reveal speed, px per millisecond. */
+  /** Delay of the lines' rise-in (they show muted + blurred until the sweep). */
+  enterDelay?: number
+  /**
+   * Blur over the end of the phrase, as placed in the Figma design: box size, vertical
+   * offset from the line top, and how far its right edge sits past the end of the text.
+   */
+  endBlur: { width: number; height: number; offsetY: number; overhang: number }
+  /** Sweep speed, px per millisecond. */
   speed?: number
 }
 
+// Width of the soft edge between revealed (black) and muted text.
+const SOFT_EDGE = 140
+
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
+
 /**
- * Heading reveal: the text starts muted, the reveal front sweeps each line left to right
- * turning it black, and the part that is not revealed yet stays blurred.
+ * Heading reveal: the lines rise in muted with a blurred phrase ending (the state drawn in
+ * Figma), then a soft front slowly sweeps them left to right, turning the text black; the
+ * end blur dissolves as the front passes it.
  */
-export function RevealText({ lines, start, delay = 0, blur, speed = 0.6 }: RevealTextProps) {
+export function RevealText({ lines, start, delay = 0, enterDelay = 0, endBlur, speed = 0.24 }: RevealTextProps) {
   const lineRefs = useRef<(HTMLSpanElement | null)[]>([])
+  const blurRef = useRef<HTMLDivElement>(null)
   const [done, setDone] = useState(false)
 
   useEffect(() => {
@@ -30,63 +42,80 @@ export function RevealText({ lines, start, delay = 0, blur, speed = 0.6 }: Revea
       return
     }
 
-    let cancelled = false
-    const animations: Animation[] = []
+    // One continuous sweep across all lines, so the reveal never stops between them.
+    const segments = lineRefs.current.map((line) => {
+      const width = line?.getBoundingClientRect().width ?? 0
+      return { line, length: width + SOFT_EDGE + 40 }
+    })
+    const total = segments.reduce((sum, segment) => sum + segment.length, 0)
+    const duration = total / speed
+    const last = segments[segments.length - 1]
+    const lastWidth = last ? last.length - SOFT_EDGE - 40 : 0
+    const blurLeft = lastWidth + endBlur.overhang - endBlur.width
 
-    const run = async () => {
-      let offset = delay
-      for (const line of lineRefs.current) {
-        if (!line) continue
-        const width = line.getBoundingClientRect().width
-        const from = -40
-        const to = width + blur.width + 40
-        const animation = line.animate([{ '--front': `${from}px` }, { '--front': `${to}px` }], {
-          duration: (to - from) / speed,
-          delay: offset,
-          easing: 'cubic-bezier(0.45, 0, 0.55, 1)',
-          fill: 'both',
-        })
-        animations.push(animation)
-        offset = 0
-        await animation.finished.catch(() => undefined)
-        if (cancelled) return
+    let frame = 0
+    let startedAt: number | null = null
+    const tick = (now: number) => {
+      startedAt ??= now + delay
+      const t = Math.min(1, Math.max(0, (now - startedAt) / duration))
+      if (blurRef.current) blurRef.current.style.transition = 'none'
+      let distance = easeInOut(t) * total
+      for (const segment of segments) {
+        const front = Math.min(segment.length, Math.max(0, distance)) - 40
+        segment.line?.style.setProperty('--front', `${front}px`)
+        if (segment === last && blurRef.current) {
+          // Fade the end blur while the soft edge passes through it.
+          const passed = (front - SOFT_EDGE * 0.5 - blurLeft) / (endBlur.width + SOFT_EDGE * 0.5)
+          blurRef.current.style.opacity = String(Math.min(1, Math.max(0, 1 - passed)))
+        }
+        distance -= segment.length
       }
-      setDone(true)
+      if (t < 1) frame = requestAnimationFrame(tick)
+      else setDone(true)
     }
-    void run()
-
-    return () => {
-      cancelled = true
-      animations.forEach((animation) => animation.cancel())
-    }
-  }, [start, done, delay, blur.width, speed])
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [start, done, delay, speed, endBlur.width, endBlur.overhang])
 
   return (
     <>
-      {lines.map((text, index) => (
-        <span
-          key={index}
-          ref={(element) => {
-            lineRefs.current[index] = element
-          }}
-          className={`reveal-text${done ? ' reveal-text--done' : ''}`}
-        >
-          <span className="reveal-text__base">{text}</span>
-          <span className="reveal-text__ink" aria-hidden>
-            {text}
-          </span>
-          {!done && (
-            <>
+      {lines.map((text, index) => {
+        const isLast = index === lines.length - 1
+        return (
+          <span
+            key={index}
+            ref={(element) => {
+              lineRefs.current[index] = element
+            }}
+            // `done` is an attribute, not a class: the reveal observer adds `is-revealed`
+            // to the class list, and a className update would wipe it.
+            className="reveal-text"
+            data-done={done || undefined}
+            data-reveal="rise"
+            style={revealDelay(enterDelay + index * 160)}
+          >
+            <span className="reveal-text__base">{text}</span>
+            <span className="reveal-text__ink" aria-hidden>
+              {text}
+            </span>
+            {isLast && !done && (
               <ProgressiveBlur
+                ref={blurRef}
                 className="reveal-text__blur"
                 radius={10}
-                style={{ width: blur.width, height: blur.height, top: blur.offsetY }}
+                data-reveal="fade"
+                style={{
+                  ...revealDelay(enterDelay + index * 160),
+                  width: endBlur.width,
+                  height: endBlur.height,
+                  top: endBlur.offsetY,
+                  right: -endBlur.overhang,
+                }}
               />
-              <span className="reveal-text__blur-tail" style={{ left: `calc(var(--front) + ${blur.width}px)`, height: blur.height, top: blur.offsetY }} />
-            </>
-          )}
-        </span>
-      ))}
+            )}
+          </span>
+        )
+      })}
     </>
   )
 }

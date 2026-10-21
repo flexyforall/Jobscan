@@ -1,10 +1,10 @@
-import type { CSSProperties } from 'react'
+import { forwardRef, type CSSProperties, type HTMLAttributes } from 'react'
 
 import './ProgressiveBlur.css'
 
 type Direction = 'to right' | 'to left' | 'to bottom' | 'to top'
 
-type ProgressiveBlurProps = {
+type ProgressiveBlurProps = HTMLAttributes<HTMLDivElement> & {
   className?: string
   style?: CSSProperties
   /** Figma background-blur radius reached at the far edge. */
@@ -18,13 +18,10 @@ type ProgressiveBlurProps = {
 // Figma "progressive" background blur: CSS has no native equivalent, so it is
 // approximated with stacked backdrop-filter layers, each masked to its own band.
 // A Figma blur radius R renders like CSS `blur(R / 2)` (checked against the Figma export).
-export function ProgressiveBlur({
-  className,
-  style,
-  radius,
-  direction = 'to right',
-  steps = 6,
-}: ProgressiveBlurProps) {
+export const ProgressiveBlur = forwardRef<HTMLDivElement, ProgressiveBlurProps>(function ProgressiveBlur(
+  { className, style, radius, direction = 'to right', steps = 6, ...rest },
+  ref,
+) {
   const layers = Array.from({ length: steps }, (_, index) => {
     const step = 100 / steps
     const start = Math.max(0, (index - 1) * step)
@@ -39,7 +36,13 @@ export function ProgressiveBlur({
   })
 
   return (
-    <div className={['progressive-blur', className].filter(Boolean).join(' ')} style={style} aria-hidden>
+    <div
+      ref={ref}
+      className={['progressive-blur', className].filter(Boolean).join(' ')}
+      style={style}
+      aria-hidden
+      {...rest}
+    >
       {layers.map(({ mask, blur }, index) => (
         <div
           key={index}
@@ -54,4 +57,4 @@ export function ProgressiveBlur({
       ))}
     </div>
   )
-}
+})

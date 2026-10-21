@@ -1,5 +1,6 @@
 import { icons, logos } from '../assets'
 import { revealDelay } from '../intro'
+import { LinesText } from './LinesText'
 import { ProgressiveBlur } from './ProgressiveBlur'
 import './Clients.css'
 
@@ -16,20 +17,25 @@ const clientLogos = [
 
 export function Clients() {
   return (
-    <section className="clients" aria-labelledby="clients-heading">
+    <section className="clients" aria-labelledby="clients-heading" data-reveal-root>
       <div className="clients__divider" aria-hidden data-reveal="fade">
         <span className="clients__divider-line">
           <img src={icons.clientsDivider} alt="" />
         </span>
       </div>
 
-      <h2 id="clients-heading" className="clients__heading" data-reveal style={revealDelay(100)}>
-        Jobscan users have been hired by
-      </h2>
+      <LinesText as="h2" id="clients-heading" className="clients__heading" text="Jobscan users have been hired by" delay={100} />
 
+      {/* The list is rendered twice and scrolled by one copy's width, so the loop is seamless. */}
       <ul className="clients__logos">
-        {clientLogos.map(({ src, alt, left, top, width, height, clip }, index) => (
-          <li key={src} className="clients__logo" data-reveal style={revealDelay(200 + index * 70)}>
+        {[...clientLogos, ...clientLogos].map(({ src, alt, left, top, width, height, clip }, index) => (
+          <li
+            key={index}
+            className="clients__logo"
+            aria-hidden={index >= clientLogos.length || undefined}
+            data-reveal
+            style={revealDelay(300 + (index % clientLogos.length) * 120)}
+          >
             {clip ? (
               <span
                 className="clients__logo-clip"
