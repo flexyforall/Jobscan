@@ -1,0 +1,10 @@
+.progressive-blur {
+  position: absolute;
+  background: var(--color-glass);
+  pointer-events: none;
+}
+
+.progressive-blur__layer {
+  position: absolute;
+  inset: 0;
+}

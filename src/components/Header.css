@@ -1,0 +1,119 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px var(--page-gutter);
+}
+
+.header__nav {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  height: 40px;
+  padding: 4px 32px 4px 16px;
+  border-radius: 8px;
+  background: var(--color-surface-subtle);
+}
+
+.header__logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header__logo-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background: var(--color-black);
+}
+
+.header__sections {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 32px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.header__link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 17px;
+  color: var(--color-black);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.header__label {
+  display: block;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.header__chevron {
+  position: relative;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.header__chevron img {
+  position: absolute;
+  left: 1.558px;
+  top: 4.558px;
+}
+
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 4px 4px 16px;
+  border-radius: 8px;
+  background: var(--color-surface-subtle);
+}
+
+.header__sign-in,
+.header__cta {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 17px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.header__sign-in {
+  color: var(--color-black);
+}
+
+.header__cta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 2px 12px 2px 2px;
+  border-radius: 6px;
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+.header__cta-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  background: var(--color-white);
+}

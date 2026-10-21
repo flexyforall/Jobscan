@@ -1,0 +1,92 @@
+.resume-upload {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  /* Takes the stroke's 1px in layout, as Figma does; the dashes are drawn by ::before. */
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--color-surface-subtle);
+  cursor: pointer;
+}
+
+/*
+ * Figma's dashed stroke is 4px dash / 4px gap; CSS `dashed` uses its own pattern,
+ * so the stroke is an SVG rect with the exact dash array (1px, inside, rgba(0,0,0,.5));
+ * the 2px dash offset lines the dashes up with the Figma render.
+ */
+.resume-upload::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 8px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Crect x='0.5' y='0.5' rx='7.5' ry='7.5' style='width:calc(100%25 - 1px);height:calc(100%25 - 1px)' fill='none' stroke='black' stroke-opacity='0.5' stroke-dasharray='4 4' stroke-dashoffset='2'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.resume-upload--hero {
+  flex-shrink: 0;
+  padding: 16px 12px;
+}
+
+.resume-upload--card {
+  flex: 1 0 0;
+  min-height: 1px;
+  justify-content: center;
+  padding: 12px;
+}
+
+.resume-upload:has(input:focus-visible) {
+  outline: 2px solid var(--color-black);
+  outline-offset: 2px;
+}
+
+.resume-upload__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  background: var(--color-black);
+}
+
+.resume-upload__glyph {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  transform: rotate(180deg);
+}
+
+.resume-upload__glyph img {
+  position: absolute;
+  left: 1.499px;
+  top: 1.4965px;
+}
+
+.resume-upload__text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-family: var(--font-sans);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.resume-upload__title {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 22px;
+  color: var(--color-black);
+}
+
+.resume-upload__hint {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--color-text-tertiary);
+}

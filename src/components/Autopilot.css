@@ -1,0 +1,302 @@
+.autopilot {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+  width: var(--page-width);
+  padding: 100px var(--page-gutter);
+  overflow: hidden;
+}
+
+/* ---- Background: image + "Water caustic" shader + 20% dim ---- */
+
+.autopilot__bg {
+  position: absolute;
+  inset: 0;
+  isolation: isolate;
+  pointer-events: none;
+}
+
+.autopilot__bg img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Blend mode/opacity of the shader layer, matched against the Figma render. */
+.autopilot__shader {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: overlay;
+  opacity: 0.8;
+}
+
+.autopilot__bg-dim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* ---- Title ---- */
+
+.autopilot__title {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.autopilot__heading {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 53px;
+  letter-spacing: -1.92px;
+  color: var(--color-white);
+  text-align: center;
+}
+
+.autopilot__lead {
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  color: var(--color-on-dark-secondary);
+  text-align: center;
+}
+
+/* ---- Tabs ---- */
+
+.autopilot__tabs {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.autopilot__tab-list {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* Bottom stroke drawn inside the 62px row, as in Figma. */
+.autopilot__tab-list::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--color-on-dark-border);
+  pointer-events: none;
+}
+
+.autopilot__tab {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1 0 0;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 1px;
+  padding: 20px 0;
+  border-radius: 12px 12px 0 0;
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 22px;
+  letter-spacing: 0.4px;
+  color: var(--color-white);
+  white-space: nowrap;
+}
+
+.autopilot__tab:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: -4px;
+}
+
+.autopilot__tab--active {
+  background: var(--color-white);
+  color: var(--color-black);
+}
+
+.autopilot__tab-icon {
+  flex-shrink: 0;
+}
+
+/* Scan's icon is exported black (active state); the others white (inactive). */
+.autopilot__tab:not(.autopilot__tab--active) .autopilot__tab-icon--scan {
+  filter: invert(1);
+}
+
+.autopilot__tab--active .autopilot__tab-icon:not(.autopilot__tab-icon--scan) {
+  filter: brightness(0);
+}
+
+.autopilot__tab-track,
+.autopilot__tab-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--color-black);
+}
+
+.autopilot__tab-track {
+  width: 100%;
+  opacity: 0.2;
+}
+
+.autopilot__tab-progress {
+  width: 160px;
+}
+
+/* ---- Panel ---- */
+
+.autopilot__panel {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 700px;
+  padding: 40px;
+  border-radius: 0 0 16px 16px;
+  overflow: hidden;
+}
+
+/*
+ * The frosted background lives on a pseudo-element: a backdrop-filter on the panel
+ * itself would make it a backdrop root and hide the section background from the
+ * progressive blur nested inside it.
+ */
+.autopilot__panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--color-on-dark-surface);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  pointer-events: none;
+}
+
+.autopilot__feature {
+  position: relative;
+  display: flex;
+  flex: 1 0 0;
+  align-items: center;
+  gap: 32px;
+  width: 100%;
+  min-height: 1px;
+}
+
+.autopilot__preview {
+  position: relative;
+  flex: 1 0 0;
+  height: 100%;
+  min-width: 1px;
+  border-radius: 24px;
+}
+
+.autopilot__document {
+  position: absolute;
+  left: calc(50% + 0.03px);
+  top: calc(50% + 0.24px);
+  width: 368.069px;
+  transform: translate(-50%, -50%);
+}
+
+.autopilot__preview-blur {
+  left: -40px;
+  top: 297px;
+  width: 1324px;
+  height: 365px;
+}
+
+.autopilot__scanline {
+  /*
+   * #98b700 → transparent white. Figma interpolates gradient stops without
+   * premultiplied alpha (the fade passes through a whitish tint); CSS always
+   * premultiplies, so the intermediate stops are spelled out.
+   */
+  --gradient-highlight-fade: linear-gradient(
+    to bottom,
+    rgb(152 183 0 / 1) 0%,
+    rgb(178 201 64 / 0.75) 25%,
+    rgb(204 219 128 / 0.5) 50%,
+    rgb(229 237 191 / 0.25) 75%,
+    rgb(255 255 255 / 0) 100%
+  );
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.autopilot__scan-glow {
+  position: absolute;
+  left: 0;
+  top: 296px;
+  width: 608px;
+  height: 368px;
+  border-radius: 0 0 4px 4px;
+  background: var(--gradient-highlight-fade);
+  opacity: 0.3;
+}
+
+.autopilot__scan-line {
+  position: absolute;
+  left: 0;
+  top: 297px;
+  width: 608px;
+  height: 2px;
+  background: var(--gradient-highlight-fade);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+
+.autopilot__scan-marker {
+  position: absolute;
+  top: calc(50% - 12.2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 11.593px;
+  height: 11.593px;
+  transform: translateY(-50%);
+}
+
+.autopilot__scan-marker::before {
+  content: '';
+  flex: none;
+  width: 8.197px;
+  height: 8.197px;
+  background: var(--color-highlight-marker);
+  transform: rotate(45deg);
+}
+
+.autopilot__scan-marker--left {
+  left: -2.35px;
+}
+
+.autopilot__scan-marker--right {
+  right: -0.8px;
+}

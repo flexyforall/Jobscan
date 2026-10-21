@@ -1,0 +1,42 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 4px 4px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.badge__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.badge__label {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 15px;
+  white-space: nowrap;
+}
+
+.badge--sand {
+  background: var(--color-badge-bg);
+  color: var(--color-badge-text);
+}
+
+.badge--success {
+  background: var(--color-success);
+  color: var(--color-white);
+}
+
+.badge--glass {
+  background: var(--color-badge-glass);
+  -webkit-backdrop-filter: blur(1px);
+  backdrop-filter: blur(1px);
+  color: var(--color-white);
+}

@@ -1,0 +1,116 @@
+/*
+ * All sizes are the Figma values of the regular document multiplied by --s.
+ * Text box heights are rounded to whole pixels, as Figma does.
+ */
+.resume-document {
+  display: flex;
+  align-items: flex-start;
+  padding: calc(var(--s) * 24px);
+  border-radius: calc(var(--s) * 12px);
+  background: var(--color-white);
+  overflow: hidden;
+  font-family: var(--font-sans);
+  color: var(--color-resume-text);
+}
+
+.resume-document--regular {
+  --s: 1;
+  --name-lh: 25px;
+  --contact-lh: 10px;
+  --content-h: 544px;
+}
+
+.resume-document--compact {
+  --s: 0.716458;
+  --name-lh: 18px;
+  --contact-lh: 7px;
+  --content-h: 390px;
+}
+
+.resume-document__body {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(var(--s) * 16px);
+  min-width: 1px;
+}
+
+.resume-document__header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(var(--s) * 4px);
+  width: 100%;
+}
+
+.resume-document__name {
+  width: 100%;
+  font-size: calc(var(--s) * 20.722px);
+  font-weight: 700;
+  line-height: var(--name-lh);
+}
+
+.resume-document__contact {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(var(--s) * 6px);
+  width: 100%;
+  font-size: calc(var(--s) * 10px);
+  font-weight: 400;
+  line-height: var(--contact-lh);
+}
+
+.resume-document__links {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--s) * 24px);
+  width: 100%;
+  white-space: nowrap;
+}
+
+.resume-document__rule {
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+  height: 0;
+}
+
+.resume-document__rule img {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}
+
+.resume-document__content {
+  width: 100%;
+  min-height: var(--content-h);
+  white-space: pre-wrap;
+  font-weight: 400;
+}
+
+.resume-document__line {
+  font-size: calc(var(--s) * 9.5px);
+  line-height: calc(var(--s) * 15.54px);
+}
+
+.resume-document__line--title {
+  font-weight: 700;
+}
+
+.resume-document__line--label {
+  font-size: calc(var(--s) * 6.04px);
+  letter-spacing: calc(var(--s) * 1.73px);
+  text-transform: uppercase;
+  color: var(--color-resume-muted);
+}
+
+.resume-document__line--meta {
+  font-size: calc(var(--s) * 7.77px);
+  color: var(--color-resume-muted);
+}
+
+.resume-document__line--gap-meta {
+  font-size: calc(var(--s) * 7.77px);
+}

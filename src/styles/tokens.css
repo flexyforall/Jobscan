@@ -1,0 +1,45 @@
+/* Design tokens — values taken 1:1 from the Figma file (Jobscan, node 44:128) */
+:root {
+  /* Colors */
+  --color-page: #f7f6f4;
+  --color-black: #000000;
+  --color-white: #ffffff;
+
+  --color-text-secondary: rgba(0, 0, 0, 0.6);
+  --color-text-tertiary: rgba(0, 0, 0, 0.4);
+  --color-text-muted: rgba(0, 0, 0, 0.3);
+  --color-surface-subtle: rgba(0, 0, 0, 0.05);
+  --color-border-subtle: rgba(0, 0, 0, 0.1);
+  --color-glass: rgba(255, 255, 255, 0.01);
+
+  --color-on-dark-secondary: rgba(255, 255, 255, 0.7);
+  --color-on-dark-border: rgba(255, 255, 255, 0.3);
+  --color-on-dark-stroke: rgba(255, 255, 255, 0.2);
+  --color-on-dark-surface: rgba(255, 255, 255, 0.1);
+
+  --color-badge-bg: #efe8db;
+  --color-badge-text: #634306;
+  --color-badge-glass: rgba(239, 232, 219, 0.15);
+
+  --color-success: #368100;
+  --color-success-bg: rgba(54, 129, 0, 0.1);
+  --color-warning: #a96500;
+  --color-warning-bg: rgba(186, 145, 0, 0.1);
+  --color-danger: #810000;
+  --color-danger-bg: rgba(129, 0, 0, 0.1);
+
+  --color-highlight: #98b700;
+  --color-highlight-marker: #98b50a;
+
+  --color-resume-text: #101214;
+  --color-resume-muted: #73808d;
+
+  /* Typography */
+  --font-sans: 'Instrument Sans', sans-serif;
+  --font-ui: 'Inter', sans-serif;
+  --font-caption: 'Nimbus Sans Novus D', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  /* Layout */
+  --page-width: 1440px;
+  --page-gutter: 60px;
+}

@@ -1,0 +1,25 @@
+.keyword-icon {
+  position: relative;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.keyword-icon__glyph {
+  position: absolute;
+}
+
+.keyword-icon__glyph--found {
+  left: 1.558px;
+  top: 3.558px;
+}
+
+.keyword-icon__glyph--partial {
+  left: 0.558px;
+  top: 4.116px;
+}
+
+.keyword-icon__glyph--missing {
+  left: 3.12px;
+  top: 3.121px;
+}
